@@ -1,0 +1,50 @@
+# Part A:
+
+## Recovered password
+User bjacobson has password "22005597"
+User ceccio has password "02361267"
+
+## Pseudocode for attack
+My program is a brute force attack that iterates through numeric passwords of length 8 and hashing it 
+until the result matches the given hash.
+
+counter = 0
+while hash match is not found:
+    pad counter value with 0 until length of password
+    format input string as "username,test_password,salt"
+    get the hash result
+    if the hashed password == given hash:
+        return the padded counter value
+    counter++
+
+## Worst case running time
+Worst case runtime would occur when the correct password is the last one tried. In the case of my 
+iterative algorithm, that would occur if the password was 99999999. At that point, the algorithm
+will have tried 10^n passwords, where n is password length. 
+The hashing function is constant time O(1), so the number of iterations is the part that matters 
+for the runtime. Thus worst-case asymptotic runtime is O(10^n), where n is password length.
+
+## Discussion of current proposal and suggestions for improvement
+The current proposal is good in the fact that it uses a salt. This means that password frequency in the 
+password database cannot be found out since each password is appended with a different random value.
+If 2 passwords are the same, the different salts will make their hashes appear different.
+However, since hash functions are very fast, it is easy to brute for check every single password
+until the correct one is found, like what my program did.
+Therefore, an improvement would be to slow down the hash function. Instead of hashlib.sha256, 
+hashlib.scrypt is a better hash function to use since it also uses memory, a costly resource, to slow
+down the hashing, making brute force password cracking difficult. 
+Another function that could be used is Argon2.
+
+# Part B:
+
+## Discussion of the current scheme
+
+## Suggestions for improving the scheme
+
+
+# Part C:
+
+## Secret code
+
+## Explanation
+

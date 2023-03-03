@@ -32,10 +32,6 @@ You will be using [cryptography.io](https://cryptography.io/en/latest/) library.
 Below all the functions that you might need are already imported.
 
 """
-
-
-
-
 import requests
 import base64
 from cryptography.fernet import Fernet
@@ -45,17 +41,33 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 import json
 
-URL = ""  ## Update this URL to match the IP given in the instructions.
+URL = "http://128.105.19.18:8080"  ## Update this URL to match the IP given in the instructions.
 
 EC_CURVE = ec.SECP384R1()
 ENCODING = Encoding.X962
 FORMAT = PublicFormat.CompressedPoint
 
-
 #### Your code starts here #####
 
+#generating random x and secret key
+x = ec.generate_private_key(EC_CURVE)
+#gx is public key to be sent in base64
+gx = x.public_key()
+gx_str = base64.urlsafe_b64encode(gx.public_bytes(ENCODING, FORMAT))
 
-
+#send the base64 gx
+r = requests.get("{url}/dh".format(url=URL), params={'gx': gx_str}) #HTTP GET request
+server_info = r.json()
+#get JSON object with c and base 64 gy back
+c = server_info['c']
+gy_str = server_info['gy']
+print(c)
+print(gy_str)
+#decode the gy
+gy_bin = base64.urlsafe_b64decode(gy_str)
+gy = ec.EllipticCurvePublicKey.from_encoded_point(EC_CURVE, gy_bin)
+#get the shared gxy key to decrypt the message
+gxy = x.exchange(ec.ECDH(), gy)
 
 #### Don't change the code below ####
 k = base64.urlsafe_b64encode(HKDF(

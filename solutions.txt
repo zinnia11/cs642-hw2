@@ -45,6 +45,17 @@ Another function that could be used is Argon2.
 # Part C:
 
 ## Secret code
+3df46BC6-6e5a9f8c was one of the secret codes I recieved.
 
 ## Explanation
+I act as the client side of the Diffie-Hellman Exchange procedure. First, I generate a secret key, x,
+using the cryptography module. From that secret key, I create a public key g^x. Then I encode that key 
+in base64 and send it through a HTTP GET request to the secret server, http://128.105.19.18:8080/dh.
+The HTTP GET request will then send back a response that is a JSON object with 'c', a message 
+encrypted with the shared key that contains the secret code, and gy, the public key for the server.
+From the public key, I can get the shared key g^xy which will be used to decrypt the message 'c' 
+and get the message and secret code. Finally, one more get request is sent to the server at 
+http://128.105.19.18:8080/verify with the secret code. The response is then whether the secret
+code is valid or not. 
+
 

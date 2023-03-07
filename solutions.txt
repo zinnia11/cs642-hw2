@@ -38,9 +38,24 @@ Another function that could be used is Argon2.
 # Part B:
 
 ## Discussion of the current scheme
+The current scheme uses encrypt-and-MAC, which is not secure. 
+
+See line 35 of badencrypt.py:
+    tag = hashlib.sha256(message.encode()).hexdigest()
+
+Notice that the plaintext message is what's used to generate the tag, rather 
+than the encrypted cyphertext. Thus the message tag can be forged because it 
+does not require a key to create.
 
 ## Suggestions for improving the scheme
+Use encrypt-then-MAC, which is secure.
 
+Change line 35 of badencrypt.py to use the ciphertext:
+    tag = hashlib.sha256(ciphertext.encode()).hexdigest()
+
+Notice that we use the ciphertext to generate the tag, rather than the plaintext.
+With this change, you need the key to create a valid tag. This way, an attacker 
+with no knowledge of the key (like in this case) cannot forge a new tag.
 
 # Part C:
 

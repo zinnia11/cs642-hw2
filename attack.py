@@ -5,10 +5,12 @@
 # usage: python3 attack.py ciphertext
 # Outputs a modified ciphertext and tag
 
-debug = 0
-debug2 = 0
-debug3 = 0 #modifying the message
-debug4 = 0 #XOR
+globaldebug = 0
+debug = globaldebug and 0
+debug2 = globaldebug and 0
+debug3 = globaldebug and 0 #modifying the message
+debug4 = globaldebug and 0 #XOR
+debuglen = globaldebug and 0
 
 import sys
 import array
@@ -27,6 +29,9 @@ held by a Wisc student at the National Bank of the Cayman Islands.
 #first block 
 PT1 = "AMOUNT: $  12.99"
 my_PT1 = "AMOUNT: $  99.99"
+if(debuglen):
+  print("len(PT1)=" + str(len(PT1)))
+  print("len(my_PT1)=" + str(len(my_PT1)))
 
 # Grab ciphertext from first argument
 ciphertextWithTag = bytes.fromhex(sys.argv[1])
@@ -38,7 +43,7 @@ if len(ciphertextWithTag) < 16+16+32:
   sys.exit(0)
 
 iv = ciphertextWithTag[:16]
-ciphertext = ciphertextWithTag[:len(ciphertextWithTag)-32]
+ciphertext = ciphertextWithTag[:len(ciphertextWithTag)-32] # with iv
 tag = ciphertextWithTag[len(ciphertextWithTag)-32:]
 
 # TODO: Modify the input so the transfer amount is more lucrative to the recipient
@@ -49,7 +54,7 @@ if(debug4):
   print(iv.hex())
   print(X.hex())
 #PT1' XOR (PT1 XOR IV)
-modified_iv = bytes(a ^ b for (a, b) in zip(my_PT1.encode(), iv))
+modified_iv = bytes(a ^ b for (a, b) in zip(my_PT1.encode(), X))
 if(debug4): 
   print(my_PT1.encode().hex())
   print(X.hex())
@@ -58,18 +63,17 @@ if(debug4):
 
 # TODO: Print the new encrypted message
 # you can change the print content if necessary
-if(debug):
-  print("iv.hex() = " + str(iv.hex()))
-  print()
-  print("ciphertext.hex() = " + str(ciphertext.hex()))
-  print()
-  print("tag.hex() = " + str(tag.hex()))
-  print()
+
 
 if(debug2): print("len(mutableFullCiphertext) = " + str(len(mutableFullCiphertext)))
 
-modified_msg = ciphertext[16:].hex()
+modified_msg = ciphertext[16:].hex() #without iv
 #print(ciphertext[16:].decode())
+
+if(debuglen):
+  print(str(len(iv.hex())) + "\niv.hex() = " + str(iv.hex()))
+  print(str(len(modified_msg)) + "\nmodified_msg.hex() = " + str(modified_msg))
+  print(str(len(tag.hex())) + "\ntag.hex() = " + str(tag.hex()))
 
 if(debug2): print("ciphertextWithTag.hex() = \n" + str(ciphertextWithTag.hex()))
 if(debug2): print()
@@ -78,7 +82,4 @@ if(debug2): print("modified_msg = ")
 #print(str(modified_msg)[12:len(str(modified_msg))-2])
 #modified_plaintext = str(modified_msg)[12+len(str(iv.hex())):len(str(modified_msg))-2-len(str(tag.hex()))]
 newtag = hashlib.sha256(my_message.encode()).hexdigest()
-#print(len(modified_msg))
 print(str(modified_iv.hex())+ modified_msg + newtag)
-#print(len(str(modified_iv.hex())+ modified_msg + newtag))
-#print(str(tag.hex()) + str(modified_msg)[12+len(str(tag.hex())):len(str(modified_msg))-2])

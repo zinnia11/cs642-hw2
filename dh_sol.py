@@ -61,8 +61,6 @@ server_info = r.json()
 #get JSON object with c and base 64 gy back
 c = server_info['c']
 gy_str = server_info['gy']
-print(c)
-print(gy_str)
 #decode the gy
 gy_bin = base64.urlsafe_b64decode(gy_str)
 gy = ec.EllipticCurvePublicKey.from_encoded_point(EC_CURVE, gy_bin)
